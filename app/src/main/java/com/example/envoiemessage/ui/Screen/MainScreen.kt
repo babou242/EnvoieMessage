@@ -21,9 +21,9 @@ import com.example.envoiemessage.ui.viewmodel.SMSViewModel
 fun MainScreen(modifier: Modifier = Modifier,location : Pair<Double,Double>?) {
     val viewModel: SMSViewModel = viewModel()
     val phoneNumber = "0609160538"
-    val message = "Youhouuuuuuuu ca fonctionne \"J'active l'appareil de secours Saf'Her\" Automatiquement voici ma localisation : "
+    val message = "J'ai activé le bracelet Saf'Here, je suis dans une situation dangereuse voici ma localisation : "
     var messageSent by remember { mutableStateOf(false) }
-    
+
     fun getGoogleMapsUrl(location: Pair<Double, Double>): String {
         return "https://www.google.com/maps?q=${location.first},${location.second}"
     }
@@ -50,7 +50,7 @@ fun MainScreen(modifier: Modifier = Modifier,location : Pair<Double,Double>?) {
         ?: Column(modifier=Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Searching for location")
-    }
+            Text(text = "Searching for location")
+        }
 
 }
