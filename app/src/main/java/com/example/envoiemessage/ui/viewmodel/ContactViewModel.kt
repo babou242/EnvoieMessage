@@ -1,9 +1,8 @@
 package com.example.envoiemessage.ui.viewmodel
 
-import android.app.Application
-import android.telephony.SmsManager
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.envoiemessage.AppDatabase
 import com.example.envoiemessage.model.Contact
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
@@ -12,8 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class SMSViewModel(application: Application):AndroidViewModel(application) {
-
+class ContactViewModel : ViewModel() {
     private val realm : Realm
     private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
     val contacts: StateFlow<List<Contact>> = _contacts
@@ -25,22 +23,36 @@ class SMSViewModel(application: Application):AndroidViewModel(application) {
         realm = Realm.open(config)
         loadContacts()
     }
+
     private fun loadContacts() {
         viewModelScope.launch {
             val contactsFromDb = realm.query<Contact>().find()
             _contacts.value = contactsFromDb
         }
     }
-    fun getAllPhoneNumbers(): List<String> {
-        return contacts.value.map { it.phoneNumber }
-    }
 
-    fun sendSMS(phoneNumbers : List<String>,message:String){
-        phoneNumbers.forEach {phoneNumber ->
-            SmsManager.getDefault().sendTextMessage(phoneNumber,null,message,null,null)
+    fun addContact(firstName: String, lastName: String, phoneNumber: String) {
+        viewModelScope.launch {
+            realm.write {
+                copyToRealm(Contact().apply {
+                    this.firstName = firstName
+                    this.lastName = lastName
+                    this.phoneNumber = phoneNumber
+                })
+            }
+            loadContacts()
         }
-
-
     }
 
+    fun deleteContact(contact: Contact) {
+        viewModelScope.launch {
+            realm.write {
+                val contactToDelete = query<Contact>("_id == $0", contact._id).first().find()
+                if (contactToDelete != null) {
+                    delete(contactToDelete)
+                }
+            }
+            loadContacts()
+        }
+    }
 }

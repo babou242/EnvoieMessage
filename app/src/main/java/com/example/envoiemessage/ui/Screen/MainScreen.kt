@@ -36,7 +36,8 @@ fun MainScreen(modifier: Modifier = Modifier,location : Pair<Double,Double>?) {
             }
             LaunchedEffect(it) {
                 val url = getGoogleMapsUrl(it)
-                viewModel.sendSMS(phoneNumber, message + url)
+                val phoneNumbers = viewModel.getAllPhoneNumbers()
+                viewModel.sendSMS(phoneNumbers, message + url)
                 messageSent = true
             }
         }else{
