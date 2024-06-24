@@ -3,8 +3,10 @@ package com.example.envoiemessage.ui.Screen
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +28,7 @@ import com.example.envoiemessage.Screen
 import com.example.envoiemessage.ui.viewmodel.PermissionViewModel
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun PermissionScreen(
     navController: NavController,
@@ -46,7 +49,7 @@ fun PermissionScreen(
         modifier = modifier.fillMaxSize()
     ) {
         if (hasPermission) {
-            navController.navigate(Screen.MainScreen.route)
+            navController.navigate(Screen.ContactScreen.route)
         } else {
             val permissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -54,6 +57,8 @@ fun PermissionScreen(
                 val isGranted = permissions[Manifest.permission.SEND_SMS] == true &&
                         permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true &&
                         permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+                        permissions[Manifest.permission.BLUETOOTH_CONNECT] == true &&
+                        permissions[Manifest.permission.BLUETOOTH_SCAN] == true
                 viewModel.onPermissionResult(isGranted)
             }
 
@@ -62,7 +67,9 @@ fun PermissionScreen(
                     arrayOf(
                         Manifest.permission.SEND_SMS,
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.BLUETOOTH_CONNECT,
+                        Manifest.permission.BLUETOOTH_SCAN
                     )
                 )
             }) {
